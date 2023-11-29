@@ -1,9 +1,9 @@
 const express = require('express');
-const { followUnFollowUser,signUpUser, loginUser, logoutUser} = require('../controllers/userController');
+const {getUserProfile, followUnFollowUser,signUpUser, loginUser, logoutUser} = require('../controllers/userController');
 const protectRoute = require('../middleware/protectRoutes');
 
 const router = express.Router();
-
+router.get("/profile/:query", getUserProfile)
 router.post("/signup", signUpUser)
 router.post("/login", loginUser)
 router.post("/logout", logoutUser)

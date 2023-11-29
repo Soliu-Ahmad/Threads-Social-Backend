@@ -1,7 +1,34 @@
 const User = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 const generateTokenAndSetCookie = require("../utils/helper/generateTokenAndSetCookie");
+const mongoose = require("mongoose");
 
+
+
+const getUserProfile = async (req, res) => {
+    // We fetch the user profile either by username or userId
+    // query is either username or userId
+
+    const {query} = req.params;
+        try{
+            let user;
+
+            // query is userId
+            if(mongoose.Types.ObjectId.isValid(query)) {
+                 user = await User.findOne({_id: query}).select("-password").select("-updatedAt");
+            } else{
+                // query is username
+                user = await User.findOne({username: query}).select("-password").select("-updatedAt");
+            }
+
+            if(!user)
+            return res.status(400).json({error: 'User not found'});
+            res.status(200).json(user)
+        } catch(err) {
+            res.status(500).json({error: err.message});
+            console.log("Error in getUserProfile: ", err.message);
+        }
+}
 const signUpUser = async (req, res) => {
 	try {
 		const { name, email, username, password } = req.body;
@@ -94,7 +121,7 @@ const followUnFollowUser = async (req, res) =>{
 
 		const isFollowing = currentUser.following.includes(id);
 
-		if (isFollowing) {
+		if (isFollowing) { 
 			// Unfollow user
 			await User.findByIdAndUpdate(id, { $pull: { followers: req.user._id } });
 			await User.findByIdAndUpdate(req.user._id, { $pull: { following: id } });
@@ -111,4 +138,6 @@ const followUnFollowUser = async (req, res) =>{
 	}
 }
 
-module.exports = { signUpUser, loginUser, logoutUser, followUnFollowUser};
+ 
+
+module.exports = {getUserProfile, signUpUser, loginUser, logoutUser, followUnFollowUser};
