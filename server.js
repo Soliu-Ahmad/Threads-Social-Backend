@@ -3,17 +3,25 @@ const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
 const userRoutes = require("./routes/userRoutes");
+const postRoutes = require ("./routes/postRoutes");
 
 dotenv.config();
 const app = express();
 
 const PORT = process.env.PORT || 5000;
 
-app.use(express.json({ limit: "50mb" })); //parse json data inside the req body
+
+// MIODDLEWARES
+app.use(express.json({ limit: "50mb" })); // To parse json data inside the req.body
 app.use(express.urlencoded({ extended: true })); //parse form data inside the req body
 app.use(cookieParser());
 
+
+// ROUTES
 app.use("/api/users", userRoutes);
+app.use("/api/posts", postRoutes);
+
+
 app.get("/", (req, res) => {
 	res.send("Welcome Home 🏡");
 });
