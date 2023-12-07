@@ -1,18 +1,20 @@
 const Post = require ("../models/postModel")
-const User = require("../models/postModel")
-
+const User = require("../models/userModel")
+const cloudinary = require("cloudinary").v2
 
 
 const createPost = async(req, res) => {
     try {
 		const { postedBy, text } = req.body;
+        console.log(postedBy)
 		let { img } = req.body;
 
-		if (!postedBy || !text) {
+		if (!postedBy && !text) {
 			return res.status(400).json({ error: "Postedby and text fields are required" });
 		}
 
 		const user = await User.findById(postedBy);
+        console.log(user)
 		if (!user) {
 			return res.status(404).json({ error: "User not found" });
 		}
@@ -29,7 +31,7 @@ const createPost = async(req, res) => {
 		if (img) {
 			const uploadedResponse = await cloudinary.uploader.upload(img);
 			img = uploadedResponse.secure_url;
-		}
+		} 
 
 		const newPost = new Post({ postedBy, text, img });
 		await newPost.save();
